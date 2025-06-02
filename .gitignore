@@ -1,0 +1,44 @@
+# Build artifacts
+bin/
+build/
+*.o
+*.obj
+*.lo
+*.la
+*.so
+*.dll
+*.dylib
+*.a
+*.lib
+*.exe
+*.out
+*.app
+
+# CMake artifacts
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+
+# IDE specific files
+.vscode/
+.roo/
+.idea/
+*.user
+*.suo
+*.ncb
+*.aps
+*.bak
+*.ilk
+*.pdb
+*.vcproj.user
+*.sdf
+*.opensdf
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+docs/

@@ -1,0 +1,9 @@
+[submodule "extlib/cpp-mcp"]
+	path = extlib/cpp-mcp
+	url = https://github.com/hkr04/cpp-mcp.git
+[submodule "extlib/OpenXLSX"]
+	path = extlib/OpenXLSX
+	url = https://github.com/troldal/OpenXLSX.git
+[submodule "extlib/spdlog"]
+	path = extlib/spdlog
+	url = https://github.com/gabime/spdlog.git
