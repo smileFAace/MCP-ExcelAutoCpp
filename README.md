@@ -123,7 +123,3 @@ This MCP server provides the following tools for Excel automation:
 *   **Description**: Create a new xlsx file with the given path. Automatically closes the Excel file after creation.
 *   **Parameters**:
     *   `file_path` (string): The path with which the file should be created.
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=AstroTeng/MCP-ExcelAutoCpp&type=Date)](https://www.star-history.com/#AstroTeng/MCP-ExcelAutoCpp&Date)
