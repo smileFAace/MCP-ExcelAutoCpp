@@ -1,12 +1,47 @@
 #include "main.h"
  
+#include <string>
+#include <algorithm> // for std::reverse
+
+// Helper function to convert column number to Excel column letter (e.g., 1 -> A, 27 -> AA)
+static std::string s_colNumberToLetters(uint32_t col_num) {
+   std::string col_letters = "";
+   while (col_num > 0) {
+       int rem = col_num % 26;
+       if (rem == 0) {
+           col_letters += 'Z';
+           col_num = (col_num / 26) - 1;
+       } else {
+           col_letters += (rem - 1) + 'A';
+           col_num = col_num / 26;
+       }
+   }
+   // If the original number was 0 or negative, return empty string or handle error
+   if (col_letters.empty() && col_num <= 0) {
+        // Handle error or return a default, e.g., empty string or throw exception
+        // For simplicity, returning empty for column 0 or less. Adjust as needed.
+        return "";
+   }
+   std::reverse(col_letters.begin(), col_letters.end());
+   return col_letters;
+}
+
+// Function to get cell address string (e.g., "A1")
+static std::string s_getCellAddress(uint32_t row, uint32_t col) {
+   if (row == 0 || col == 0) {
+       // Handle invalid row/column index, Excel is 1-based
+       return "InvalidAddress"; // Or throw an exception
+   }
+   return s_colNumberToLetters(col) + std::to_string(row);
+}
+
  using ExcelWrapper::ExcelOperator;
  static const int SERVER_PORT = 8888; 
  static const char ASCII_ART[] = "\n\
  ░█▀▀░█░█░█▀▀░█▀▀░█░░░█▀█░█░█░▀█▀░█▀█\n\
  ░█▀▀░▄▀▄░█░░░█▀▀░█░░░█▀█░█░█░░█░░█░█\n\
  ░▀▀▀░▀░▀░▀▀▀░▀▀▀░▀▀▀░▀░▀░▀▀▀░░▀░░▀▀▀\n\
- v0.0.1                 By smileFAace\n";
+ v0.0.2                 By smileFAace\n";
  
 ExcelOperator g_excel_operator;
 std::string g_current_excel_file_path;
@@ -63,6 +98,12 @@ mcp::json get_sheet_range_content_handler(const mcp::json& params, const std::st
         throw mcp::mcp_exception(mcp::error_code::invalid_params, "Missing required parameters for sheet range content.");
     }
 
+    bool seperate_cell = false;
+
+    if (params.contains("seperate_cell")){
+        seperate_cell = params["seperate_cell"].get<bool>();
+    }
+
     std::string sheet_name = params["sheet_name"].get<std::string>();
     uint32_t first_row = params["first_row"].get<uint32_t>();
     uint32_t first_column = params["first_column"].get<uint32_t>();
@@ -79,24 +120,88 @@ mcp::json get_sheet_range_content_handler(const mcp::json& params, const std::st
         g_excel_operator.getRangeValues(first_row, first_column, last_row, last_column);
 
     mcp::json result_array = mcp::json::array();
-    for (const auto& row : range_values) {
-        mcp::json row_array = mcp::json::array();
-        for (const auto& cell_value : row) {
-            if (cell_value.type() == OpenXLSX::XLValueType::Empty) {
-                row_array.push_back(nullptr);
-            } else if (cell_value.type() == OpenXLSX::XLValueType::Boolean) {
-                row_array.push_back(cell_value.get<bool>());
-            } else if (cell_value.type() == OpenXLSX::XLValueType::Integer) {
-                row_array.push_back(cell_value.get<int64_t>());
-            } else if (cell_value.type() == OpenXLSX::XLValueType::Float) {
-                row_array.push_back(cell_value.get<double>());
-            } else if (cell_value.type() == OpenXLSX::XLValueType::String) {
-                row_array.push_back(cell_value.get<std::string>());
-            } else {
-                row_array.push_back(cell_value.get<std::string>());
+    if (seperate_cell)
+    {
+        uint32_t current_row = first_row;
+        for (const auto& row : range_values)
+        {
+            uint32_t current_col = first_column;
+            for (const auto& cell_value : row)
+            {
+                if (cell_value.type() != OpenXLSX::XLValueType::Empty)
+                {
+                    std::string cell_content_str;
+                    if (cell_value.type() == OpenXLSX::XLValueType::Boolean)
+                    {
+                        cell_content_str = cell_value.get<bool>() ? "TRUE" : "FALSE";
+                    }
+                    else if (cell_value.type() == OpenXLSX::XLValueType::Integer)
+                    {
+                        cell_content_str = std::to_string(cell_value.get<int64_t>());
+                    }
+                    else if (cell_value.type() == OpenXLSX::XLValueType::Float)
+                    {
+                        // Use std::ostringstream for better float formatting if needed
+                        cell_content_str = std::to_string(cell_value.get<double>());
+                    }
+                    else if (cell_value.type() == OpenXLSX::XLValueType::String)
+                    {
+                        cell_content_str = cell_value.get<std::string>();
+                    }
+                    else
+                    { // Consider other types as string for simplicity
+                        try {
+                           cell_content_str = cell_value.get<std::string>();
+                        } catch (const OpenXLSX::XLValueTypeError& e) {
+                           // Handle cases where conversion to string might fail for unexpected types
+                           cell_content_str = "[Unsupported Type]";
+                           spdlog::warn("Unsupported cell type encountered at row {}, col {}: {}", current_row, current_col, e.what());
+                        }
+                    }
+                    std::string cell_address = s_getCellAddress(current_row, current_col);
+                    result_array.push_back(cell_content_str + "@" + cell_address);
+                }
+                current_col++;
             }
+            current_row++;
         }
-        result_array.push_back(row_array);
+    }
+    else
+    {
+        for (const auto& row : range_values)
+        {
+            mcp::json row_array = mcp::json::array();
+            for (const auto& cell_value : row)
+            {
+                if (cell_value.type() == OpenXLSX::XLValueType::Empty)
+                {
+                    row_array.push_back(nullptr);
+                }
+                else if (cell_value.type() == OpenXLSX::XLValueType::Boolean)
+                {
+                    row_array.push_back(cell_value.get<bool>());
+                }
+                else if (cell_value.type() == OpenXLSX::XLValueType::Integer)
+                {
+                    row_array.push_back(cell_value.get<int64_t>());
+                }
+                else if (cell_value.type() == OpenXLSX::XLValueType::Float)
+                {
+                    row_array.push_back(cell_value.get<double>());
+                }
+                else
+                { // Treat String and others similarly
+                     try {
+                        row_array.push_back(cell_value.get<std::string>());
+                     } catch (const OpenXLSX::XLValueTypeError& e) {
+                        row_array.push_back("[Unsupported Type]");
+                         // Optionally log the error with row/col if needed, though harder without tracking here
+                        spdlog::warn("Unsupported cell type encountered during standard processing: {}", e.what());
+                     }
+                }
+            }
+            result_array.push_back(row_array);
+        }
     }
 
     mcp::json result = {
@@ -248,6 +353,7 @@ static void s_mcpServer_init(mcp::server& server, bool blocking_mode) {
         .with_number_param("first_column", "The starting column number (1-indexed)")
         .with_number_param("last_row", "The ending row number (1-indexed)")
         .with_number_param("last_column", "The ending column number (1-indexed)")
+        .with_boolean_param("seperate_cell", "Output the none-null cells seperately, suitable for the sheet with many null cells")
         .build();
     server.register_tool(get_range_tool, get_sheet_range_content_handler);
 
@@ -260,9 +366,9 @@ static void s_mcpServer_init(mcp::server& server, bool blocking_mode) {
         .build();
     server.register_tool(set_range_tool, set_sheet_range_content_handler);
 
-    mcp::tool create_xlsx_tool = mcp::tool_builder("create_xlsx_file")
+    mcp::tool create_xlsx_tool = mcp::tool_builder("create_xlsx_file_by_absolute_path")
        .with_description("Create a new xlsx file with the given path. Automatically closes the Excel file after creation.")
-       .with_string_param("file_path", "The path with which the file should create to")
+       .with_string_param("file_path", "The ABSOLUTE path with which the file should create to")
        .build();
     server.register_tool(create_xlsx_tool, create_xlsx_file_handler);
 
