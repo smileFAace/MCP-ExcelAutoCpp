@@ -25,12 +25,10 @@ Before compiling, please ensure the following tools are installed on your system
 *   **CMake**: Version 3.15 or higher.
 *   **Ninja**: A fast build system.
 
-### Getting Submodules
-
-This project uses Git submodules for its external libraries. After cloning the repository, you need to initialize and update these submodules:
+### Getting the source code for compiling.
 
 ```bash
-git submodule update --init --recursive
+git clone https://github.com/smileFAace/MCP-ExcelAutoCpp.git
 ```
 
 ### Compilation Steps
