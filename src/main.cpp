@@ -208,7 +208,7 @@ mcp::json set_sheet_range_content_handler(const mcp::json& params, const std::st
 }
 
 static void s_spdlog_init() {
-    spdlog::set_level(spdlog::level::info);
+
     spdlog::set_pattern("%^%L%$(%H:%M:%S) %v");
 
     bool console_sink_exists = false;
@@ -269,7 +269,7 @@ static void s_mcpServer_init(mcp::server& server, bool blocking_mode) {
     spdlog::info("Starting MCP server at localhost:{}", SERVER_PORT);
     spdlog::info("Press Ctrl+C to stop the server");
     
-    mcp::set_log_level(mcp::log_level::info);
+
     server.start(blocking_mode);
 }
 
@@ -280,9 +280,11 @@ int main() {
 #endif
 
     std::cout << ASCII_ART << std::endl;
+    spdlog::set_level(spdlog::level::info);
     s_spdlog_init();
 
     mcp::server server("localhost", SERVER_PORT);
+    mcp::set_log_level(mcp::log_level::error);
     s_mcpServer_init(server, true);
     
     return 0;
