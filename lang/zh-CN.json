@@ -1,0 +1,99 @@
+{
+  "log": {
+    "error": {
+      "no_excel_path": "尚未设置 Excel 文件路径。请先使用 'open_excel_and_list_sheets'。",
+      "failed_open_excel": "打开 Excel 文件失败：{0}",
+      "failed_open_or_list": "打开 Excel 文件或列出工作表失败：{0}",
+      "missing_params": {
+        "get_range": "缺少 get_sheet_range_content 所需的参数。",
+        "create_xlsx": "缺少 create_xlsx_file 所需的 'file_path' 参数。",
+        "set_range": "缺少 set_sheet_range_content 所需的参数。"
+      },
+      "failed_select_sheet": "选择工作表失败：{0}",
+      "values_not_2d_array": "set_sheet_range_content 的 'values' 参数必须是二维数组。",
+      "values_row_not_array": "set_sheet_range_content 中 'values' 的每一行都必须是一个数组。",
+      "unsupported_cell_type": {
+         "set_range": "set_sheet_range_content 的 'values' 数组中包含不支持的单元格值类型。"
+      },
+      "failed_create_excel": "创建 Excel 文件失败：{0}",
+      "failed_set_range": "设置工作表 '{0}' 的范围内容失败。"
+    },
+    "warn": {
+       "unsupported_cell_type": {
+          "get_range": "在行 {0}，列 {1} 遇到不支持的单元格类型：{2}",
+          "standard": "标准处理过程中遇到不支持的单元格类型：{0}"
+       }
+    },
+    "info": {
+      "opened_excel": "成功打开 Excel 文件：{0}",
+      "retrieved_range": "成功从工作表 '{0}' 获取范围内容。",
+      "created_excel": "成功创建 Excel 文件：{0}",
+      "set_range": "成功设置工作表 '{0}' 的范围内容。",
+      "server_start": "在 localhost:{0} 启动 MCP 服务器",
+      "server_stop_prompt": "按 Ctrl+C 停止服务器"
+    }
+  },
+  "exception": {
+    "error": {
+      "no_excel_path": "尚未设置 Excel 文件路径。请先使用 'open_excel_and_list_sheets'。",
+      "failed_open_excel": "打开 Excel 文件失败：{0}",
+      "missing_param": {
+         "file_path": "缺少 'file_path' 参数",
+         "file_path_create": "缺少 'file_path' 参数"
+      },
+      "failed_open_or_list": "打开 Excel 文件或列出工作表失败：{0}",
+      "missing_params": {
+         "get_range": "缺少获取工作表范围内容所需的参数。",
+         "set_range": "缺少设置工作表范围内容所需的参数。"
+      },
+      "failed_select_sheet": "选择工作表失败：{0}",
+      "failed_create_excel": "创建 Excel 文件失败：{0}",
+      "values_not_2d_array": "'values' 参数必须是二维数组。",
+      "values_row_not_array": "'values' 的每一行都必须是一个数组。",
+      "unsupported_cell_type": {
+         "set_range": "'values' 数组中包含不支持的单元格值类型。"
+      },
+      "failed_set_range": "设置工作表范围内容失败。"
+    }
+  },
+  "tool": {
+    "open_excel": {
+      "description": "打开一个 Excel 文件并列出所有工作表名称。此工具还将设置当前 Excel 文件路径以供后续操作使用。建议在进行任何操作之前或想要更改要修改的文件时首先运行此工具。",
+      "param": {
+        "file_path": "Excel 文件的完整路径"
+      }
+    },
+    "get_range": {
+      "description": "获取并输出指定工作表中指定范围内的表格内容。自动打开和关闭 Excel 文件。",
+      "param": {
+        "sheet_name": "要读取的工作表名称",
+        "first_row": "起始行号（从 1 开始）",
+        "first_column": "起始列号（从 1 开始）",
+        "last_row": "结束行号（从 1 开始）",
+        "last_column": "结束列号（从 1 开始）",
+        "cell_with_coord": "输出非空单元格及其各自的坐标，适用于输出区域包含大量空单元格的情况"
+      }
+    },
+    "set_range": {
+      "description": "设置指定工作表中指定范围内的表格内容。自动打开和关闭 Excel 文件。",
+      "param": {
+        "sheet_name": "要写入的工作表名称",
+        "first_row": "起始行号（从 1 开始）",
+        "first_column": "起始列号（从 1 开始）",
+        "values": "要写入范围的二维数组值"
+      }
+    },
+    "create_xlsx": {
+      "description": "使用给定路径创建一个新的 xlsx 文件。创建后自动关闭 Excel 文件。",
+      "param": {
+        "file_path": "文件应创建到的绝对路径"
+      }
+    }
+  },
+  "result": {
+    "created_excel": "成功创建 Excel 文件：{0}",
+    "set_range": "成功设置工作表范围内容。",
+    "unsupported_type": "[不支持的类型]",
+    "invalid_address": "无效地址"
+  }
+}
