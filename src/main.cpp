@@ -7,6 +7,20 @@
 #include <filesystem> // Required for path operations
 #include <algorithm> // for std::reverse
 
+using ExcelWrapper::ExcelOperator;
+
+static const char DEFAULT_LANG[] = "zh-CN";
+static const int SERVER_PORT = 8888; 
+
+static const char ASCII_ART[] = "\n\
+░█▀▀░█░█░█▀▀░█▀▀░█░░░█▀█░█░█░▀█▀░█▀█\n\
+░█▀▀░▄▀▄░█░░░█▀▀░█░░░█▀█░█░█░░█░░█░█\n\
+░▀▀▀░▀░▀░▀▀▀░▀▀▀░▀▀▀░▀░▀░▀▀▀░░▀░░▀▀▀\n\
+v0.0.2                 By smileFAace\n";
+ 
+ExcelOperator g_excel_operator;
+std::string g_current_excel_file_path;
+
 // Helper function to convert column number to Excel column letter (e.g., 1 -> A, 27 -> AA)
 static std::string s_colNumberToLetters(uint32_t col_num) {
    std::string col_letters = "";
@@ -38,17 +52,6 @@ static std::string s_getCellAddress(uint32_t row, uint32_t col) {
    }
    return s_colNumberToLetters(col) + std::to_string(row);
 }
-
- using ExcelWrapper::ExcelOperator;
- static const int SERVER_PORT = 8888; 
- static const char ASCII_ART[] = "\n\
- ░█▀▀░█░█░█▀▀░█▀▀░█░░░█▀█░█░█░▀█▀░█▀█\n\
- ░█▀▀░▄▀▄░█░░░█▀▀░█░░░█▀█░█░█░░█░░█░█\n\
- ░▀▀▀░▀░▀░▀▀▀░▀▀▀░▀▀▀░▀░▀░▀▀▀░░▀░░▀▀▀\n\
- v0.0.2                 By smileFAace\n";
- 
-ExcelOperator g_excel_operator;
-std::string g_current_excel_file_path;
 
 void ensure_excel_open() {
     if (g_current_excel_file_path.empty()) {
@@ -383,20 +386,11 @@ static void s_mcpServer_init(mcp::server& server, bool blocking_mode) {
     server.start(blocking_mode);
 }
 
-int main() {
 #ifdef _WIN32
-    #include <windows.h>
-    SetConsoleOutputCP(CP_UTF8);
+#include <windows.h> // Moved include here as it's needed by s_i18n_init
 #endif
 
-    std::cout << ASCII_ART << std::endl;
-    spdlog::set_level(spdlog::level::info);
-    s_spdlog_init();
-
-    // --- Initialize I18nManager ---
-    // Assume lang files are in a 'lang' directory relative to the executable
-    // In a real application, determining this path might need more robust logic
-    // (e.g., using command-line args, environment variables, or platform-specific APIs)
+static void s_i18n_init() {
     std::string langDirPath = "lang"; // Simple relative path assumption
     try {
         // Attempt to find the executable path to build a more reliable relative path
@@ -410,10 +404,8 @@ int main() {
             // Add Linux/macOS path finding logic if needed
             // For simplicity, stick to relative path if not Windows for now
         #endif
-         // Log message already uses i18n::t in i18n.cpp
          spdlog::info("Attempting to load language files from: {}", langDirPath);
     } catch (const std::exception& e) {
-         // Keep this error message in English as it's a low-level init problem
          spdlog::error("Error determining language directory path: {}", e.what());
          // Fallback to simple relative path
          langDirPath = "lang";
@@ -426,18 +418,30 @@ int main() {
     langLoaded |= i18n.loadLanguage("zh-CN", langDirPath + "/zh-CN.json");
 
     if (!langLoaded) {
-         // Keep this error message in English as it's a critical init failure
          spdlog::error("Failed to load any language files from '{}'. Exiting.", langDirPath);
-         return 1; // Exit if no languages could be loaded
+         // return 1; // Exit if no languages could be loaded - Removed exit from init function
     }
 
-    // Set default language (e.g., Chinese, fallback to English if zh-CN failed)
-    if (!i18n.setLanguage("zh-CN")) {
+    // Set default language
+    if (!i18n.setLanguage(DEFAULT_LANG)) {
         i18n.setLanguage("en"); // Fallback to English
     }
-    // Keep this log in English for easier debugging of language setting itself
+
     spdlog::info("Current language set to: {}", i18n.getCurrentLanguage());
-    // --- End I18nManager Initialization ---
+}
+
+
+int main() {
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+#endif
+
+    std::cout << ASCII_ART << std::endl;
+
+    spdlog::set_level(spdlog::level::info);
+    s_spdlog_init();
+
+    s_i18n_init(); 
 
 
     mcp::server server("localhost", SERVER_PORT);

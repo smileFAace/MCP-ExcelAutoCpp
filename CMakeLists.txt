@@ -69,7 +69,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 add_executable(${PROJECT_NAME}
 src/main.cpp
 src/ExcelOperator.cpp
-src/i18n.cpp # Added the i18n source file
+src/i18n.cpp
 )
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/main.h) # Set precompiled header
 
@@ -79,7 +79,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC src) # Add src directory
 # -------- Third-party Libraries --------
 # cpp-mcp
 add_subdirectory(extlib/cpp-mcp)
-# include_directories(extlib/cpp-mcp/include extlib/cpp-mcp/common) # Removed global include
 target_include_directories(${PROJECT_NAME} PRIVATE extlib/cpp-mcp/include extlib/cpp-mcp/common) # Add cpp-mcp includes
 if(WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE mcp ws2_32 iphlpapi)
@@ -88,12 +87,10 @@ else()
 endif()
 # OpenXLSX
 add_subdirectory(extlib/OpenXLSX)
-# include_directories(extlib/OpenXLSX/OpenXLSX/headers) # Removed global include
 target_include_directories(${PROJECT_NAME} PRIVATE extlib/OpenXLSX/OpenXLSX/headers) # Add OpenXLSX includes
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenXLSX::OpenXLSX)
 # spdlog
 add_subdirectory(extlib/spdlog)
-# include_directories(extlib/spdlog/include) # Removed global include
 target_include_directories(${PROJECT_NAME} PRIVATE extlib/spdlog/include) # Add spdlog includes
 target_link_libraries(${PROJECT_NAME} PRIVATE spdlog)
 
