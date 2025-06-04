@@ -18,6 +18,10 @@ public:
     // Returns true on success, false otherwise.
     bool loadLanguage(const std::string& langCode, const std::string& filePath);
 
+    // Loads language data from a JSON string.
+    // Returns true on success, false otherwise.
+    bool loadLanguageFromString(const std::string& langCode, const std::string& jsonContent);
+
     // Sets the current language to use for translations.
     // Returns true if the language was loaded previously, false otherwise.
     bool setLanguage(const std::string& langCode);

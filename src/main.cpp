@@ -1,5 +1,6 @@
 // Include project headers first
 #include "i18n.h" // Include the i18n header
+#include "embedded_translations.h" // Include the embedded translations
 // Include the precompiled header last among project headers
 #include "main.h"
 
@@ -20,6 +21,7 @@ v0.0.2                 By smileFAace\n";
  
 ExcelOperator g_excel_operator;
 std::string g_current_excel_file_path;
+
 
 // Helper function to convert column number to Excel column letter (e.g., 1 -> A, 27 -> AA)
 static std::string s_colNumberToLetters(uint32_t col_num) {
@@ -413,12 +415,23 @@ static void s_i18n_init() {
 
 
     auto& i18n = i18n::I18nManager::getInstance();
-    bool langLoaded = false;
-    langLoaded |= i18n.loadLanguage("en", langDirPath + "/en.json");
-    langLoaded |= i18n.loadLanguage("zh-CN", langDirPath + "/zh-CN.json");
 
-    if (!langLoaded) {
-         spdlog::error("Failed to load any language files from '{}'. Exiting.", langDirPath);
+    // Load English from embedded string in the dedicated header
+    bool enLoaded = i18n.loadLanguageFromString("en", embedded_translations::EN_JSON);
+    if (!enLoaded) {
+        spdlog::error("Failed to load embedded English language string from header.");
+        // Decide if this is fatal. For now, we continue and try to load Chinese.
+    }
+
+    // Load Chinese from file
+    bool zhCnLoaded = i18n.loadLanguage("zh-CN", langDirPath + "/zh-CN.json");
+
+    if (!zhCnLoaded) {
+         spdlog::error("Failed to load zh-CN language file from '{}'.", langDirPath + "/zh-CN.json");
+         // If English also failed, maybe exit? For now, just log.
+         if (!enLoaded) {
+             spdlog::critical("Failed to load ANY language data. Application might not function correctly.");
+         }
          // return 1; // Exit if no languages could be loaded - Removed exit from init function
     }
 

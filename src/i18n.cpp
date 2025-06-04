@@ -42,6 +42,27 @@ bool I18nManager::loadLanguage(const std::string& langCode, const std::string& f
     }
 }
 
+// Load language data from a JSON string
+bool I18nManager::loadLanguageFromString(const std::string& langCode, const std::string& jsonContent) {
+    try {
+        nlohmann::json langData = nlohmann::json::parse(jsonContent);
+        languages_[langCode] = langData;
+        spdlog::info("i18n: Successfully loaded language string for language code '{}'", langCode);
+        // Set the first loaded language as the default/current one if none is set
+        if (currentLangCode_.empty()) {
+            setLanguage(langCode);
+        }
+        return true;
+    } catch (const nlohmann::json::parse_error& e) {
+        spdlog::error("i18n: Failed to parse language string for code '{}': {}", langCode, e.what());
+        return false;
+    } catch (const std::exception& e) {
+        spdlog::error("i18n: An unexpected error occurred while loading language string for code '{}': {}", langCode, e.what());
+        return false;
+    }
+}
+
+
 // Set the current language
 bool I18nManager::setLanguage(const std::string& langCode) {
     if (languages_.count(langCode)) {
