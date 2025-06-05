@@ -1,123 +1,130 @@
+Language：[中文](README_zh-CN.md) | [English](README.md)
 # C++ Excel Automation MCP Server
 
-This is a C++-based Excel automation MCP (Model Context Protocol) server project. It leverages the OpenXLSX library for Excel file operations and uses spdlog for logging. The project aims to provide a set of programmable Excel manipulation tools via the MCP protocol.
+This is a C++ based Excel Automation MCP (Model Context Protocol) server project. It utilizes the OpenXLSX library for Excel file operations and aims to provide an intelligent set of Excel manipulation tools through the MCP protocol, leveraging LLM capabilities.
 
 ## Table of Contents
 
+*   [Features](#features)
 *   [Building the Project](#building-the-project)
-    *   [Prerequisites](#prerequisites)
-    *   [Getting Submodules](#getting-submodules)
-    *   [Compilation Steps](#compilation-steps)
 *   [Usage](#usage)
-    *   [Running the Server](#running-the-server)
-    *   [MCP Server Capabilities](#mcp-server-capabilities)
-    *   [Provided Tools](#provided-tools)
+
+
+## Features
+
+*   **Simple and Easy-to-Use MCP Interface**: Provides standardized MCP tools, making it convenient for clients (like AI assistants) to invoke Excel automation functions.
+*   **Single-File Deployment**: Compiles into a single executable file for easy deployment and execution.
+*   **Customizable Multi-language Support**: Easily add or modify interface languages via JSON files.
+
+## Server Capabilities
+
+This MCP server provides the following tools, which can be invoked by an LLM to interact with xlsx spreadsheet files:
+
+*   **`open_excel_and_list_sheets`**:
+    *   Description: Open an Excel file and list all sheet names. This tool will also set the current Excel file path for subsequent operations. RECOMMENDED TO RUN THIS TOOL FIRST BEFORE ANY OPERATION OR IF WANT TO CHANGE THE FILE TO MODIFY.
+    *   Parameters:
+        *   `file_path` (string): The absolute path to the Excel file.
+*   **`get_sheet_range_content`**:
+    *   Description: Get and output table content within a specified range in a specific sheet. Automatically opens and closes the Excel file.
+    *   Parameters:
+        *   `sheet_name` (string): The name of the sheet to read from.
+        *   `first_row` (number): The starting row number (1-indexed).
+        *   `first_column` (number): The starting column number (1-indexed).
+        *   `last_row` (number): The ending row number (1-indexed).
+        *   `last_column` (number): The ending column number (1-indexed).
+        *   `cell_with_coord` (boolean, optional): Output non-empty cells with their respective coordinates, suitable for situations where the output area contains a large number of empty cells.
+*   **`set_sheet_range_content`**:
+    *   Description: Set table content within a specified range in a specific sheet. Automatically opens and closes the Excel file.
+    *   Parameters:
+        *   `sheet_name` (string): The name of the sheet to write to.
+        *   `first_row` (number): The starting row number (1-indexed).
+        *   `first_column` (number): The starting column number (1-indexed).
+        *   `values` (array[array]): The 2D array of values to write to the range (supports null, boolean, number, string types).
+*   **`create_xlsx_file_by_absolute_path`**: (Note: The tool name is defined as this in the code, but the key in JSON is `create_xlsx`)
+    *   Description: Create a new xlsx file with the given path. Automatically closes the Excel file after creation.
+    *   Parameters:
+        *   `file_path` (string): The ABSOLUTE path where the file should be created.
+
+*(Note: The automatic open/close behavior mentioned in the tool descriptions is an internal implementation detail and does not require user attention.)*
 
 ## Building the Project
 
-This project uses CMake as its build system, and it is recommended to use Ninja as the generator for compilation.
+This project uses CMake for building. Installing Ninja is recommended for faster compilation speeds.
 
-### Prerequisites
+**Build Steps:**
 
-Before compiling, please ensure the following tools are installed on your system:
-
-*   **C++ Compiler**: A C++17 compliant compiler (e.g., GCC, Clang, MSVC).
-*   **CMake**: Version 3.15 or higher.
-*   **Ninja**: A fast build system.
-
-### Getting the source code for compiling.
-
-```bash
-git clone https://github.com/smileFAace/MCP-ExcelAutoCpp.git
-```
-
-### Compilation Steps
-
-1.  **Generate Build Files(Ninja should be installed first for fast compile)**:
+1.  **Prepare Environment:**
+    *   Ensure you have a C++17 compiler, CMake (>= 3.15), and Ninja installed.
+    *   Clone the repository: `git clone https://github.com/smileFAace/MCP-ExcelAutoCpp.git`
+2.  **Compile:**
     ```bash
+    # Change to the project directory (if not already in the root)
+    # cd MCP-ExcelAutoCpp
+
+    # Generate build files (Ninja recommended)
     cmake -G "Ninja" -S . -B build
-    ```
-    This command tells CMake to generate Ninja build files in a `build` directory. If you are on Windows using Visual Studio, you might consider using `cmake -G "Visual Studio 17 2022" -S . -B build` (or your installed Visual Studio version).
 
-2.  **Compile the Project**:
-    ```bash
+    # Perform compilation
     cmake --build build
     ```
-    This command will compile the project using the generated build files in the `build` directory. The executable is typically located in the `build/bin/` directory.
+    The compiled executable is typically located in the `bin/` directory.
 
 ## Usage
 
-After compilation, this project generates an executable that runs as an MCP server.
+After successful compilation, find the executable named `ExcelAutoCpp` (Linux/macOS) or `ExcelAutoCpp.exe` (Windows) in the `./bin/` directory.
 
-### Running the Server
+**Start the Server**
 
-In the `build/bin/` directory, you will find the executable. The name and extension of the executable will vary depending on your operating system (e.g., `ExcelAutoCpp.exe` on Windows, `ExcelAutoCpp` on Linux/macOS). Run this file to start the MCP server:
+Simply run the executable to start the MCP server.
 
 ```bash
+# Example (adjust path as needed)
 ./bin/ExcelAutoCpp
 ```
 
-And when this shows up, it means the server is ready to provide the funciton:
-```bash
+When you see output similar to the following, the server has started successfully and is listening on `localhost:8888`:
 
- ░█▀▀░█░█░█▀▀░█▀▀░█░░░█▀█░█░█░▀█▀░█▀█
- ░█▀▀░▄▀▄░█░░░█▀▀░█░░░█▀█░█░█░░█░░█░█
- ░▀▀▀░▀░▀░▀▀▀░▀▀▀░▀▀▀░▀░▀░▀▀▀░░▀░░▀▀▀
- v0.0.1                  
-
-I(12:17:38) Starting MCP server at localhost:8888       
-I(12:17:38) Press Ctrl+C to stop the server
 ```
 
-### MCP Server Capabilities
+░█▀▀░█░█░█▀▀░█▀▀░█░░░█▀█░█░█░▀█▀░█▀█
+░█▀▀░▄▀▄░█░░░█▀▀░█░░░█▀█░█░█░░█░░█░█
+░▀▀▀░▀░▀░▀▀▀░▀▀▀░▀▀▀░▀░▀░▀▀▀░░▀░░▀▀▀
+v0.0.2                 By smileFAace
 
-This project functions as an MCP server. Its capabilities are defined by its configuration. For a detailed understanding of the tools it provides and how to interact with them, refer to the following server configuration:
+I(17:35:48) i18n: Successfully loaded language string for language code 'en'
+I(17:35:48) i18n: Set current language to 'en'
+W(17:35:48) lang.json not found at 'E:\prj\MCP-ExcelAutoCpp\bin\lang.json'. Using default language.
+I(17:35:48) i18n: Set current language to 'en'
+I(17:35:48) Current language set to: en
+I(17:35:48) Starting MCP server at localhost:8888
+I(17:35:48) Press Ctrl+C to stop the server
+```
 
+**Connecting and Using:**
+
+This server adheres to the MCP protocol. You can use any MCP-compatible client (such as Roo, cline, claude, cherry studio, etc.) to connect to the server's SSE endpoint (default: `http://localhost:8888/sse`) to invoke the provided Excel automation tools.
+
+For example, to configure this MCP server in cline, simply add the following content to the mcp configuration JSON file provided by the plugin after the server is running successfully, and then refresh:
 ```json
 {
   "mcpServers": {
     "excel-auto-cpp": {
-      "url": "http://localhost:8888/sse",
-      "disabled": false,
-      "timeout": 15
+      "url": "http://localhost:8888/sse"
     }
   }
 }
 ```
 
-You can connect to this server using any MCP-compatible client (e.g., Roo, cline, Claude, or other custom applications/integrated environments) and invoke these tools to automate Excel operations.
+**Changing and Customizing Server Language:**
 
-### Provided Tools
+The server defaults to English (`en`) for its interface language. You can change the language by creating a custom language file:
 
-This MCP server provides the following tools for Excel automation:
+1.  Locate the directory containing the server executable (usually `bin/`).
+2.  Create a text file named `lang.json` in that directory.
+3.  Copy the **complete key-value pairs** for your desired language into this `lang.json` file.
+    *   You can refer to the `*.json` files in the `lang/` directory of the project source code as templates (e.g., [`lang/zh-cn/lang.json`](lang/zh-cn/lang.json:1) contains the Chinese translations).
+    *   The `lang.json` file needs to contain all translation entries required for the program interface and logs.
 
-#### `open_excel_and_list_sheets`
-
-*   **Description**: Open an Excel file and list all sheet names. This tool will also set the current Excel file path for subsequent operations. It is recommended to run this tool first before any operation or if you want to change the file to modify.
-*   **Parameters**:
-    *   `file_path` (string): The full path to the Excel file.
-
-#### `get_sheet_range_content`
-
-*   **Description**: Get and output table content within a specified range in a specific sheet. Automatically opens and closes the Excel file.
-*   **Parameters**:
-    *   `sheet_name` (string): The name of the sheet to read from.
-    *   `first_row` (number): The starting row number (1-indexed).
-    *   `first_column` (number): The starting column number (1-indexed).
-    *   `last_row` (number): The ending row number (1-indexed).
-    *   `last_column` (number): The ending column number (1-indexed).
-
-#### `set_sheet_range_content`
-
-*   **Description**: Set table content within a specified range in a specific sheet. Automatically opens and closes the Excel file.
-*   **Parameters**:
-    *   `sheet_name` (string): The name of the sheet to write to.
-    *   `first_row` (number): The starting row number (1-indexed).
-    *   `first_column` (number): The starting column number (1-indexed).
-    *   `values` (array of array of object): The 2D array of values to write to the range.
-
-#### `create_xlsx_file`
-
-*   **Description**: Create a new xlsx file with the given path. Automatically closes the Excel file after creation.
-*   **Parameters**:
-    *   `file_path` (string): The path with which the file should be created.
+4.  Save the `lang.json` file and restart the server.
+    *   The server will automatically detect and load this file upon startup. If loaded successfully, it will use the language defined in `lang.json`.
+    *   If the `lang.json` file does not exist, is incorrectly formatted, or is missing necessary translation entries, the server will fall back to the default English (`en`) language.
