@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.10)
 option(BUILD_RELEASE "Build in release mode with O3 optimization" ON)
 option(PROJECT_STATIC "Build project as static library/executable" ON)
 option(THIRD_LIB_STATIC "Build third-party libraries as static libraries" ON)
-
+set(LANGUAGE_NAME zh-cn) # determine which language file will be copied from ./lang folder to ./bin folder
 
 # -------- Project overall compile setting --------
 if(BUILD_RELEASE)
@@ -96,7 +96,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE spdlog)
 
 # -------- Copy Resources --------
 # Copy the lang directory to the executable output directory after build
-set(LANGUAGE_NAME zh-cn)
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
         ${PROJECT_SOURCE_DIR}/lang/${LANGUAGE_NAME}/lang.json $<TARGET_FILE_DIR:${PROJECT_NAME}>/lang.json
