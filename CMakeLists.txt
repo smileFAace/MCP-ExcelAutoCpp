@@ -96,7 +96,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE spdlog)
 
 # -------- Copy Resources --------
 # Copy the lang directory to the executable output directory after build
+set(LANGUAGE_NAME zh-cn)
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${PROJECT_SOURCE_DIR}/lang $<TARGET_FILE_DIR:${PROJECT_NAME}>/lang
-    COMMENT "Copying language files to output directory")
+    COMMAND ${CMAKE_COMMAND} -E copy
+        ${PROJECT_SOURCE_DIR}/lang/${LANGUAGE_NAME}/lang.json $<TARGET_FILE_DIR:${PROJECT_NAME}>/lang.json
+    COMMENT "Copying lang.json to output directory")

@@ -60,7 +60,7 @@
     "open_excel": {
       "description": "打开一个 Excel 文件并列出所有工作表名称。此工具还将设置当前 Excel 文件路径以供后续操作使用。建议在进行任何操作之前或想要更改要修改的文件时首先运行此工具。",
       "param": {
-        "file_path": "Excel 文件的完整路径"
+        "file_path": "Excel 文件的绝对路径"
       }
     },
     "get_range": {

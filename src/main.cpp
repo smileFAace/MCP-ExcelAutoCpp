@@ -393,51 +393,45 @@ static void s_mcpServer_init(mcp::server& server, bool blocking_mode) {
 #endif
 
 static void s_i18n_init() {
-    std::string langDirPath = "lang"; // Simple relative path assumption
-    try {
-        // Attempt to find the executable path to build a more reliable relative path
-        // This is a basic attempt and might not work in all deployment scenarios.
-        #ifdef _WIN32
-            char pathBuf[MAX_PATH];
-            GetModuleFileNameA(NULL, pathBuf, MAX_PATH);
-            std::filesystem::path exePath = pathBuf;
-            langDirPath = (exePath.parent_path() / "lang").string();
-        #else
-            // Add Linux/macOS path finding logic if needed
-            // For simplicity, stick to relative path if not Windows for now
-        #endif
-         spdlog::info("Attempting to load language files from: {}", langDirPath);
-    } catch (const std::exception& e) {
-         spdlog::error("Error determining language directory path: {}", e.what());
-         // Fallback to simple relative path
-         langDirPath = "lang";
-    }
-
-
     auto& i18n = i18n::I18nManager::getInstance();
 
     // Load English from embedded string in the dedicated header
-    bool enLoaded = i18n.loadLanguageFromString("en", embedded_translations::EN_JSON);
-    if (!enLoaded) {
+    bool en_loaded = i18n.loadLanguageFromString("en", embedded_translations::EN_JSON);
+    if (!en_loaded) {
         spdlog::error("Failed to load embedded English language string from header.");
-        // Decide if this is fatal. For now, we continue and try to load Chinese.
     }
 
-    // Load Chinese from file
-    bool zhCnLoaded = i18n.loadLanguage("zh-CN", langDirPath + "/zh-CN.json");
+    // Determine the path to lang.json relative to the executable
+    std::filesystem::path exe_path;
+#ifdef _WIN32
+    char path_buf[MAX_PATH];
+    GetModuleFileNameA(NULL, path_buf, MAX_PATH);
+    exe_path = path_buf;
+#else
+    // For non-Windows, assume current working directory or add platform-specific logic
+    exe_path = std::filesystem::current_path();
+#endif
+    std::filesystem::path lang_json_path = exe_path.parent_path() / "lang.json";
 
-    if (!zhCnLoaded) {
-         spdlog::error("Failed to load zh-CN language file from '{}'.", langDirPath + "/zh-CN.json");
-         // If English also failed, maybe exit? For now, just log.
-         if (!enLoaded) {
-             spdlog::critical("Failed to load ANY language data. Application might not function correctly.");
-         }
-         // return 1; // Exit if no languages could be loaded - Removed exit from init function
+    // Load language from lang.json
+    bool lang_json_loaded = false;
+    if (std::filesystem::exists(lang_json_path)) {
+        lang_json_loaded = i18n.loadLanguage("custom", lang_json_path.string());
+        if (!lang_json_loaded) {
+            spdlog::error("Failed to load language file from '{}'.", lang_json_path.string());
+        }
+    } else {
+        spdlog::warn("lang.json not found at '{}'. Using default language.", lang_json_path.string());
     }
 
     // Set default language
-    if (!i18n.setLanguage(DEFAULT_LANG)) {
-        i18n.setLanguage("en"); // Fallback to English
+    if (lang_json_loaded) {
+        if (!i18n.setLanguage("custom")) {
+            spdlog::error("Failed to set 'custom' language from lang.json. Falling back to English.");
+            i18n.setLanguage("en"); // Fallback to English
+        }
+    } else if (!i18n.setLanguage("en")) { // Fallback to English if lang.json not loaded or failed
+        spdlog::critical("Failed to load ANY language data. Application might not function correctly.");
     }
 
     spdlog::info("Current language set to: {}", i18n.getCurrentLanguage());
