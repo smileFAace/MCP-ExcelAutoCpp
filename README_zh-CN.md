@@ -128,5 +128,20 @@ I(17:35:48) Press Ctrl+C to stop the server
 4.  保存 `lang.json` 文件并重新启动服务器。
     *   服务器启动时会自动检测并加载该文件。如果加载成功，将使用 `lang.json` 中定义的语言。
     *   如果 `lang.json` 文件不存在、格式错误或缺少必要的翻译条目，服务器将回退到默认的英文 (`en`) 语言。
+    ```bash
+
+    ░█▀▀░█░█░█▀▀░█▀▀░█░░░█▀█░█░█░▀█▀░█▀█
+    ░█▀▀░▄▀▄░█░░░█▀▀░█░░░█▀█░█░█░░█░░█░█
+    ░▀▀▀░▀░▀░▀▀▀░▀▀▀░▀▀▀░▀░▀░▀▀▀░░▀░░▀▀▀
+    v0.0.2                 By smileFAace
+
+    I(20:27:30) i18n: Successfully loaded language string for language code 'en'
+    I(20:27:30) i18n: Set current language to 'en'
+    I(20:27:30) i18n: Successfully loaded language file 'F:\Prj\MCP-ExcelAutoCpp\bin\lang.json' for language code 'custom'
+    I(20:27:30) i18n: Set current language to 'custom'
+    I(20:27:30) Current language set to: custom
+    I(20:27:30) 在 localhost:8888启动 MCP 服务器
+    I(20:27:30) 按 Ctrl+C 停止服务器
+    ```
 
 
