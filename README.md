@@ -9,7 +9,6 @@ This is a C++ based Excel Automation MCP (Model Context Protocol) server project
 *   [Building the Project](#building-the-project)
 *   [Usage](#usage)
 
-
 ## Features
 
 *   **Simple and Easy-to-Use MCP Interface**: Provides standardized MCP tools, making it convenient for clients (like AI assistants) to invoke Excel automation functions.
@@ -128,3 +127,10 @@ The server defaults to English (`en`) for its interface language. You can change
 4.  Save the `lang.json` file and restart the server.
     *   The server will automatically detect and load this file upon startup. If loaded successfully, it will use the language defined in `lang.json`.
     *   If the `lang.json` file does not exist, is incorrectly formatted, or is missing necessary translation entries, the server will fall back to the default English (`en`) language.
+
+    
+
+## Download
+
+You can download the latest release from the [Releases](https://github.com/smileFAace/MCP-ExcelAutoCpp/releases) page.
+

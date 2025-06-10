@@ -3,6 +3,8 @@ Language：[中文](README_zh-CN.md) | [English](README.md)
 
 这是一个基于 C++ 的 Excel 自动化 MCP (模型上下文协议) 服务器项目。本项目使用 OpenXLSX 库进行 Excel 文件操作，旨在通过 MCP 协议配合 LLM 能力提供一套智能化的 Excel 操作工具。
 
+
+
 ## 目录
 
 *   [项目特点](#项目特点)
@@ -46,6 +48,7 @@ Language：[中文](README_zh-CN.md) | [English](README.md)
         *   `file_path` (string): 文件应创建到的绝对路径。
 
 *(注意：工具描述中提到的自动打开/关闭行为是内部实现细节，用户无需关心。)*
+
 
 ## 构建项目
 
@@ -128,5 +131,26 @@ I(17:35:48) Press Ctrl+C to stop the server
 4.  保存 `lang.json` 文件并重新启动服务器。
     *   服务器启动时会自动检测并加载该文件。如果加载成功，将使用 `lang.json` 中定义的语言。
     *   如果 `lang.json` 文件不存在、格式错误或缺少必要的翻译条目，服务器将回退到默认的英文 (`en`) 语言。
+    ```bash
+
+    ░█▀▀░█░█░█▀▀░█▀▀░█░░░█▀█░█░█░▀█▀░█▀█
+    ░█▀▀░▄▀▄░█░░░█▀▀░█░░░█▀█░█░█░░█░░█░█
+    ░▀▀▀░▀░▀░▀▀▀░▀▀▀░▀▀▀░▀░▀░▀▀▀░░▀░░▀▀▀
+    v0.0.2                 By smileFAace
+
+    I(20:27:30) i18n: Successfully loaded language string for language code 'en'
+    I(20:27:30) i18n: Set current language to 'en'
+    I(20:27:30) i18n: Successfully loaded language file 'F:\Prj\MCP-ExcelAutoCpp\bin\lang.json' for language code 'custom'
+    I(20:27:30) i18n: Set current language to 'custom'
+    I(20:27:30) Current language set to: custom
+    I(20:27:30) 在 localhost:8888启动 MCP 服务器
+    I(20:27:30) 按 Ctrl+C 停止服务器
+    ```
+
+
+## 下载
+
+您可以从 [发布页面](https://github.com/smileFAace/MCP-ExcelAutoCpp/releases) 下载最新版本。
+
 
 
