@@ -17,7 +17,7 @@ static const char ASCII_ART[] = "\n\
 ░█▀▀░█░█░█▀▀░█▀▀░█░░░█▀█░█░█░▀█▀░█▀█\n\
 ░█▀▀░▄▀▄░█░░░█▀▀░█░░░█▀█░█░█░░█░░█░█\n\
 ░▀▀▀░▀░▀░▀▀▀░▀▀▀░▀▀▀░▀░▀░▀▀▀░░▀░░▀▀▀\n\
-v0.0.2                 By smileFAace\n";
+v0.0.3                 By smileFAace\n";
  
 ExcelOperator g_excel_operator;
 std::string g_current_excel_file_path;
@@ -109,8 +109,8 @@ mcp::json get_sheet_range_content_handler(const mcp::json& params, const std::st
 
     bool seperate_cell = false;
 
-    if (params.contains("seperate_cell")){
-        seperate_cell = params["seperate_cell"].get<bool>();
+    if (params.contains("cell_with_coord")){
+        seperate_cell = params["cell_with_coord"].get<bool>();
     }
 
     std::string sheet_name = params["sheet_name"].get<std::string>();
