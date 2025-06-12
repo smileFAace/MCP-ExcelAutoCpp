@@ -152,5 +152,8 @@ I(17:35:48) Press Ctrl+C to stop the server
 
 您可以从 [发布页面](https://github.com/smileFAace/MCP-ExcelAutoCpp/releases) 下载最新版本。
 
+## 🌟星星增长史
+
+[![Star History Chart](https://api.star-history.com/svg?repos=smileFAace/MCP-ExcelAutoCpp&type=Timeline)](https://www.star-history.com/#smileFAace/MCP-ExcelAutoCpp&Timeline)
 
 
