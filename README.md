@@ -134,3 +134,6 @@ The server defaults to English (`en`) for its interface language. You can change
 
 You can download the latest release from the [Releases](https://github.com/smileFAace/MCP-ExcelAutoCpp/releases) page.
 
+## 🌟Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=smileFAace/MCP-ExcelAutoCpp&type=Timeline)](https://www.star-history.com/#smileFAace/MCP-ExcelAutoCpp&Timeline)
